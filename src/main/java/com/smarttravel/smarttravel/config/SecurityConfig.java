@@ -1,4 +1,3 @@
-
 package com.smarttravel.smarttravel.config;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +37,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://127.0.0.1:5500",
-                "http://localhost:5500"
+                "http://localhost:5500",
+                "https://srichandana-24eg107f41.netlify.app"
         ));
 
         configuration.setAllowedMethods(List.of(
