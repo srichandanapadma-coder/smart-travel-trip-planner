@@ -1,0 +1,1023 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smart Travel</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #f5f7fb;
+            color: #1e293b;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 6%;
+            background: white;
+            box-shadow: 0 2px 12px #0000000c;
+        }
+
+        .logo { font-size: 23px; font-weight: 800; color: #1d4ed8; }
+        .logo span { color: #0f172a; }
+        .navbar nav { display: flex; gap: 18px; flex-wrap: wrap; }
+        .navbar a { color: #334155; text-decoration: none; font-weight: 600; }
+
+        .dashboard-section { padding: 35px 18px 55px; }
+        .dashboard-container { width: 100%; max-width: 1100px; margin: auto; }
+        .section-label { color: #2563eb; font-size: 12px; font-weight: 800; letter-spacing: 2px; }
+        .dashboard-container > h1 { font-size: clamp(27px, 4vw, 38px); margin-bottom: 8px; }
+        .dashboard-text { color: #64748b; margin-bottom: 28px; }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .dashboard-card, .trip-form-container, .my-trips-container {
+            padding: 23px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px #0f172a08;
+        }
+
+        .dashboard-icon { font-size: 30px; }
+        .dashboard-card h2 { font-size: 19px; }
+        .dashboard-card p { color: #64748b; line-height: 1.6; min-height: 45px; }
+
+        .dashboard-btn, .secondary-btn {
+            display: inline-block;
+            padding: 12px 17px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .dashboard-btn:hover { background: #1d4ed8; }
+        .secondary-btn { background: #e2e8f0; color: #1e293b; }
+        button:disabled { opacity: .6; cursor: wait; }
+
+        .trip-form-container, .my-trips-container {
+            display: none;
+            margin-top: 28px;
+        }
+
+        .trip-form-container h2, .my-trips-container h2 {
+            margin-top: 0;
+            color: #172554;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px 18px;
+        }
+
+        form > label {
+            align-self: end;
+            font-size: 14px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        form > input, form > select, form > textarea {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            font: inherit;
+        }
+
+        form > input, form > select { min-height: 44px; }
+
+        form > input:focus, form > select:focus, form > textarea:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: #2563eb;
+        }
+
+        .full-width { grid-column: 1 / -1; }
+        .interest-section { grid-column: 1 / -1; margin-top: 12px; }
+        .interest-heading { font-weight: 800; font-size: 16px; }
+        .interest-description { color: #64748b; font-size: 13px; line-height: 1.5; }
+
+        .interest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+        }
+
+        .interest-option {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px;
+            border: 1px solid #dbe3ef;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        .interest-option:has(input:checked) {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #1d4ed8;
+        }
+
+        .interest-option input { accent-color: #2563eb; }
+
+        #interestMessage, #tripMessage, #routeMessage,
+        #plannerMessage, .location-message {
+            line-height: 1.6;
+        }
+
+        .gps-button {
+            width: fit-content;
+            max-width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #93c5fd;
+            border-radius: 9px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .gps-button:hover { background: #dbeafe; }
+
+        .location-message {
+            margin: 0;
+            color: #475569;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        #plannerResult, #routeResult, #tripsList { margin-top: 22px; }
+
+        .trip-card {
+            margin: 14px 0;
+            padding: 20px;
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .trip-card h3 { color: #1e3a8a; }
+        .trip-card p { line-height: 1.6; }
+        .trip-card li { margin-bottom: 13px; line-height: 1.7; }
+
+        .expense-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .expense-item {
+            padding: 14px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .expense-item span {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .expense-item strong { font-size: 19px; }
+
+        .estimated-total {
+            color: #1e3a8a;
+            font-size: 25px;
+            font-weight: 800;
+            margin: 20px 0;
+        }
+
+        .budget-warning, .budget-ok, .budget-info {
+            padding: 13px;
+            border-radius: 8px;
+            line-height: 1.6;
+            margin: 12px 0;
+        }
+
+        .budget-warning { background: #fff7ed; color: #9a3412; }
+        .budget-ok { background: #f0fdf4; color: #166534; }
+        .budget-info { background: #eff6ff; color: #1e40af; }
+
+        .map-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+        .muted { color: #64748b; font-size: 13px; }
+        footer { padding: 22px; text-align: center; color: #64748b; }
+
+        @media (max-width: 600px) {
+            .navbar { align-items: flex-start; flex-direction: column; }
+            .dashboard-section { padding: 24px 12px; }
+            .trip-form-container, .my-trips-container { padding: 17px; }
+            form { grid-template-columns: 1fr; gap: 9px; }
+            .full-width, .interest-section { grid-column: 1; }
+            .dashboard-card p { min-height: 0; }
+        }
+    </style>
+</head>
+
+<body>
+<header class="navbar">
+    <div class="logo">Smart<span>Travel</span></div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+</header>
+
+<section class="dashboard-section">
+<div class="dashboard-container">
+
+    <p class="section-label">SMART TRAVEL</p>
+    <h1>Welcome, <span id="userName">Traveler</span>!</h1>
+    <p class="dashboard-text">Plan your journey, manage your trips and explore new places.</p>
+
+    <div class="dashboard-cards">
+        <div class="dashboard-card">
+            <div class="dashboard-icon">✈️</div>
+            <h2>Create Trip</h2>
+            <p>Save your travel details.</p>
+            <button type="button" class="dashboard-btn" id="createTripBtn">Create Trip</button>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-icon">🧳</div>
+            <h2>My Trips</h2>
+            <p>View trips saved to your account.</p>
+            <button type="button" class="dashboard-btn" id="myTripsBtn">My Trips</button>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-icon">🗺️</div>
+            <h2>Find Route</h2>
+            <p>Find route information between two places.</p>
+            <button type="button" class="dashboard-btn" id="findRouteBtn">Find Route</button>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="dashboard-icon">🧭</div>
+            <h2>Plan My Trip</h2>
+            <p>Generate an itinerary using your dates, budget and interests.</p>
+            <button type="button" class="dashboard-btn" id="planMyTripBtn">Plan My Trip</button>
+        </div>
+    </div>
+
+    <!-- CREATE TRIP -->
+    <section id="tripFormContainer" class="trip-form-container">
+        <h2>Create New Trip</h2>
+        <form id="tripForm">
+            <label for="source">Starting Point</label>
+            <input id="source" required placeholder="e.g. Hyderabad">
+
+            <button type="button" class="gps-button full-width" id="currentLocationBtn">
+                📍 Use My Current Location
+            </button>
+            <p class="location-message full-width" id="locationMessage" aria-live="polite"></p>
+
+            <label for="destination">Destination</label>
+            <input id="destination" required placeholder="e.g. Goa">
+
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" required>
+
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" required>
+
+            <label for="travelers">Number of Travellers</label>
+            <input type="number" id="travelers" min="1" value="1" required>
+
+            <label for="description">Description</label>
+            <textarea id="description" rows="3" placeholder="Optional trip notes"></textarea>
+
+            <button class="dashboard-btn full-width" type="submit">Save Trip</button>
+            <p id="tripMessage" class="full-width" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <!-- FIND ROUTE -->
+    <section id="routeContainer" class="trip-form-container">
+        <h2>Find Route</h2>
+        <form id="routeForm">
+            <label for="routeSource">Starting Point</label>
+            <input id="routeSource" required placeholder="e.g. Hyderabad">
+
+            <label for="routeDestination">Destination</label>
+            <input id="routeDestination" required placeholder="e.g. Goa">
+
+            <button class="dashboard-btn full-width" type="submit">Find Route</button>
+            <p id="routeMessage" class="full-width" aria-live="polite"></p>
+        </form>
+        <div id="routeResult"></div>
+    </section>
+
+    <!-- SMART TRIP PLANNER -->
+    <section id="plannerContainer" class="trip-form-container">
+        <h2>Plan Your Trip</h2>
+        <p class="muted">Choose your travel dates, transport, interests and budget.</p>
+
+        <form id="plannerForm">
+            <label for="plannerSource">Starting Point</label>
+            <input id="plannerSource" required placeholder="e.g. Hyderabad">
+
+            <button type="button" class="gps-button full-width" id="plannerCurrentLocationBtn">
+                📍 Use My Current Location
+            </button>
+            <p class="location-message full-width" id="plannerLocationMessage" aria-live="polite"></p>
+
+            <label for="plannerDestination">Destination</label>
+            <input id="plannerDestination" required placeholder="e.g. Goa">
+
+            <label for="plannerStartDate">Start Date</label>
+            <input type="date" id="plannerStartDate" required>
+
+            <label for="plannerEndDate">End Date</label>
+            <input type="date" id="plannerEndDate" required>
+
+            <label for="plannerTravelers">Number of Travellers</label>
+            <input type="number" id="plannerTravelers" min="1" value="2" required>
+
+            <label for="plannerBudget">Total Group Budget (₹)</label>
+            <input type="number" id="plannerBudget" min="1" step="1"
+                   placeholder="e.g. 20000" required>
+
+            <label for="arrivalTransport">How will you reach your destination?</label>
+            <select id="arrivalTransport" required>
+                <option value="">Choose arrival transport</option>
+                <option value="OWN_VEHICLE">Own Vehicle</option>
+                <option value="BUS">Bus</option>
+                <option value="TRAIN">Train</option>
+                <option value="FLIGHT">Flight</option>
+            </select>
+
+            <label for="localTransport">How will you travel locally?</label>
+            <select id="localTransport" required>
+                <option value="RECOMMEND">Recommend for me</option>
+                <option value="PUBLIC_TRANSPORT">Public Transport</option>
+                <option value="TAXI">Taxi / Cab</option>
+                <option value="RENTAL_SCOOTER">Rental Scooter / Bike</option>
+                <option value="RENTAL_CAR">Rental Car</option>
+                <option value="OWN_VEHICLE">Own Vehicle</option>
+            </select>
+
+            <div class="interest-section">
+                <span class="interest-heading">What do you enjoy?</span>
+                <p class="interest-description">Choose your interests for a personalized itinerary.</p>
+
+                <div class="interest-grid">
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="beaches"><span>🏖️ Beaches</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="nature"><span>🌿 Nature and mountains</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="history"><span>🏰 History and culture</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="adventure"><span>🚤 Adventure and water sports</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="food"><span>🍽️ Local food</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="nightlife"><span>🌃 Nightlife</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="boat"><span>🛥️ Boat trips</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="spiritual"><span>🛕 Spiritual places</span></label>
+                    <label class="interest-option"><input type="checkbox" name="plannerInterest" value="relaxation"><span>🌅 Relaxation and sunsets</span></label>
+                </div>
+
+                <p id="interestMessage" class="muted" aria-live="polite">0 interests selected.</p>
+            </div>
+
+            <button class="dashboard-btn full-width" id="generatePlanBtn" type="submit">
+                Generate My Trip Plan
+            </button>
+            <p id="plannerMessage" class="full-width" aria-live="polite"></p>
+        </form>
+
+        <div id="plannerResult"></div>
+    </section>
+
+    <!-- MY TRIPS -->
+    <section id="myTripsContainer" class="my-trips-container">
+        <h2>My Trips</h2>
+        <button type="button" class="secondary-btn" id="refreshTripsBtn">Refresh Trips</button>
+        <div id="tripsList"></div>
+    </section>
+
+</div>
+</section>
+
+<footer><p>© 2026 Smart Travel. All rights reserved.</p></footer>
+
+<script>
+"use strict";
+
+const API_BASE = window.SMARTTRAVEL_API_BASE || "http://localhost:8081";
+const getToken = () => localStorage.getItem("token");
+
+const $ = id => document.getElementById(id);
+
+const savedUserName = localStorage.getItem("userName");
+if (savedUserName) $("userName").textContent = savedUserName;
+
+$("logoutBtn").addEventListener("click", event => {
+    event.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userEmail");
+    window.location.href = "login.html";
+});
+
+const sectionIds = [
+    "tripFormContainer",
+    "routeContainer",
+    "plannerContainer",
+    "myTripsContainer"
+];
+
+function showSection(id) {
+    sectionIds.forEach(sectionId => {
+        $(sectionId).style.display = sectionId === id ? "block" : "none";
+    });
+
+    $(id).scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+$("createTripBtn").addEventListener("click", () => showSection("tripFormContainer"));
+$("findRouteBtn").addEventListener("click", () => showSection("routeContainer"));
+$("planMyTripBtn").addEventListener("click", () => showSection("plannerContainer"));
+
+function addText(parent, tag, text, className) {
+    const element = document.createElement(tag);
+    element.textContent = text ?? "";
+    if (className) element.className = className;
+    parent.appendChild(element);
+    return element;
+}
+
+function addMapButton(parent, label, url) {
+    if (!url) return;
+
+    const link = document.createElement("a");
+    link.className = "dashboard-btn";
+    link.textContent = label;
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    parent.appendChild(link);
+}
+
+function mapsDirections(source, destination, mode = "driving") {
+    return "https://www.google.com/maps/dir/?api=1"
+        + "&origin=" + encodeURIComponent(source)
+        + "&destination=" + encodeURIComponent(destination)
+        + "&travelmode=" + encodeURIComponent(mode);
+}
+
+function money(value) {
+    const number = Number(value);
+    return value !== null && value !== undefined && Number.isFinite(number)
+        ? "₹" + number.toLocaleString("en-IN", { maximumFractionDigits: 2 })
+        : "Not provided";
+}
+
+function showMessage(id, text, color = "#334155") {
+    $(id).textContent = text;
+    $(id).style.color = color;
+}
+
+function authHeaders(json = false) {
+    const headers = {};
+    if (json) headers["Content-Type"] = "application/json";
+    if (getToken()) headers["Authorization"] = "Bearer " + getToken();
+    return headers;
+}
+
+// GPS AND PLACE NAME LOOKUP
+async function fillCurrentLocation(inputId, messageId, buttonId) {
+    const input = $(inputId);
+    const message = $(messageId);
+    const button = $(buttonId);
+
+    if (!navigator.geolocation) {
+        showMessage(messageId, "This browser does not support location access.", "red");
+        return;
+    }
+
+    button.disabled = true;
+    showMessage(messageId, "Requesting your location permission...");
+
+    navigator.geolocation.getCurrentPosition(async position => {
+        try {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2"
+                + "&lat=" + encodeURIComponent(latitude)
+                + "&lon=" + encodeURIComponent(longitude);
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("Could not retrieve the place name.");
+
+            const data = await response.json();
+            const address = data.address || {};
+
+            const placeName = [
+                address.suburb || address.neighbourhood ||
+                address.village || address.town || address.city,
+                address.state,
+                address.country
+            ].filter(Boolean).join(", ");
+
+            input.value = placeName || data.display_name || latitude + ", " + longitude;
+            showMessage(messageId, "Current location added: " + input.value, "green");
+        } catch (error) {
+            console.error("GPS error:", error);
+            showMessage(
+                messageId,
+                "GPS was detected, but the place name could not be retrieved. Enter your starting point manually.",
+                "red"
+            );
+        } finally {
+            button.disabled = false;
+        }
+    }, error => {
+        let text = "Unable to get your location.";
+
+        if (error.code === error.PERMISSION_DENIED) {
+            text = "Location permission was denied. Allow browser location access or enter your city manually.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+            text = "Your location is unavailable. Try again or enter your city manually.";
+        } else if (error.code === error.TIMEOUT) {
+            text = "Getting your location took too long. Please try again.";
+        }
+
+        showMessage(messageId, text, "red");
+        button.disabled = false;
+    }, {
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 60000
+    });
+}
+
+$("currentLocationBtn").addEventListener("click", () =>
+    fillCurrentLocation("source", "locationMessage", "currentLocationBtn")
+);
+
+$("plannerCurrentLocationBtn").addEventListener("click", () =>
+    fillCurrentLocation("plannerSource", "plannerLocationMessage", "plannerCurrentLocationBtn")
+);
+
+// DATE VALIDATION
+const today = new Date();
+const todayString = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+].join("-");
+
+["startDate", "endDate", "plannerStartDate", "plannerEndDate"].forEach(id => {
+    $(id).min = todayString;
+});
+
+$("startDate").addEventListener("change", () => {
+    $("endDate").min = $("startDate").value || todayString;
+});
+
+$("plannerStartDate").addEventListener("change", () => {
+    $("plannerEndDate").min = $("plannerStartDate").value || todayString;
+});
+
+// INTEREST SELECTION
+const interestCheckboxes = Array.from(
+    document.querySelectorAll('input[name="plannerInterest"]')
+);
+
+function updateInterestCount() {
+    const count = interestCheckboxes.filter(item => item.checked).length;
+    $("interestMessage").textContent = count + " interests selected.";
+}
+
+interestCheckboxes.forEach(item => item.addEventListener("change", updateInterestCount));
+updateInterestCount();
+
+// CREATE TRIP
+$("tripForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    if (!getToken()) {
+        showMessage("tripMessage", "Please log in before saving a trip.", "red");
+        return;
+    }
+
+    const startDate = $("startDate").value;
+    const endDate = $("endDate").value;
+
+    if (endDate < startDate) {
+        showMessage("tripMessage", "End date must not be before start date.", "red");
+        return;
+    }
+
+    const trip = {
+        source: $("source").value.trim(),
+        destination: $("destination").value.trim(),
+        startDate,
+        endDate,
+        travelers: Number($("travelers").value),
+        description: $("description").value.trim()
+    };
+
+    try {
+        const response = await fetch(API_BASE + "/api/trips", {
+            method: "POST",
+            headers: authHeaders(true),
+            body: JSON.stringify(trip)
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not save trip. HTTP " + response.status);
+        }
+
+        showMessage("tripMessage", "Trip saved successfully!", "green");
+        this.reset();
+        $("travelers").value = 1;
+    } catch (error) {
+        console.error(error);
+        showMessage("tripMessage", error.message, "red");
+    }
+});
+
+// FIND ROUTE
+$("routeForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const source = $("routeSource").value.trim();
+    const destination = $("routeDestination").value.trim();
+    const result = $("routeResult");
+
+    result.replaceChildren();
+    showMessage("routeMessage", "Searching for route...");
+
+    try {
+        const url = API_BASE + "/api/routes?source="
+            + encodeURIComponent(source)
+            + "&destination=" + encodeURIComponent(destination);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Route API returned HTTP " + response.status);
+        }
+
+        const data = await response.json();
+        showMessage("routeMessage", "Route information received.", "green");
+
+        const card = document.createElement("div");
+        card.className = "trip-card";
+        addText(card, "h3", source + " → " + destination);
+
+        const details = document.createElement("pre");
+        details.style.whiteSpace = "pre-wrap";
+        details.textContent = JSON.stringify(data, null, 2);
+        card.appendChild(details);
+
+        addMapButton(card, "Open Driving Directions", mapsDirections(source, destination));
+        result.appendChild(card);
+    } catch (error) {
+        console.error(error);
+        showMessage("routeMessage", "Unable to get route: " + error.message, "red");
+
+        const card = document.createElement("div");
+        card.className = "trip-card";
+        addText(card, "p", "You can still open Google Maps for directions.");
+        addMapButton(card, "Open Google Maps", mapsDirections(source, destination));
+        result.appendChild(card);
+    }
+});
+
+// MY TRIPS
+$("myTripsBtn").addEventListener("click", loadMyTrips);
+$("refreshTripsBtn").addEventListener("click", loadMyTrips);
+
+async function loadMyTrips() {
+    if (!getToken()) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    showSection("myTripsContainer");
+    const list = $("tripsList");
+    list.textContent = "Loading trips...";
+
+    try {
+        const response = await fetch(API_BASE + "/api/trips/my-trips", {
+            headers: authHeaders()
+        });
+
+        if (!response.ok) {
+            throw new Error("Could not retrieve trips. HTTP " + response.status);
+        }
+
+        const trips = await response.json();
+        list.replaceChildren();
+
+        if (!Array.isArray(trips) || trips.length === 0) {
+            list.textContent = "You have not saved any trips yet.";
+            return;
+        }
+
+        trips.forEach(trip => {
+            const card = document.createElement("div");
+            card.className = "trip-card";
+
+            addText(card, "h3", (trip.source || "") + " → " + (trip.destination || ""));
+            addText(card, "p", "Start: " + (trip.startDate || "Not specified"));
+            addText(card, "p", "End: " + (trip.endDate || "Not specified"));
+            addText(card, "p", "Travellers: " + (trip.travelers ?? ""));
+            addText(card, "p", "Description: " + (trip.description || "None"));
+
+            list.appendChild(card);
+        });
+    } catch (error) {
+        console.error(error);
+        list.textContent = "Unable to load trips: " + error.message;
+    }
+}
+
+// SMART TRIP PLANNER
+$("plannerForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const message = $("plannerMessage");
+    const result = $("plannerResult");
+    const button = $("generatePlanBtn");
+
+    result.replaceChildren();
+    showMessage("plannerMessage", "");
+
+    const source = $("plannerSource").value.trim();
+    const destination = $("plannerDestination").value.trim();
+    const startDate = $("plannerStartDate").value;
+    const endDate = $("plannerEndDate").value;
+    const travelers = Number($("plannerTravelers").value);
+    const budget = Number($("plannerBudget").value);
+    const arrivalTransport = $("arrivalTransport").value;
+    const localTransport = $("localTransport").value;
+
+    const interests = interestCheckboxes
+        .filter(item => item.checked)
+        .map(item => item.value);
+
+    if (endDate < startDate) {
+        showMessage("plannerMessage", "End date must not be before start date.", "red");
+        return;
+    }
+
+    if (!Number.isInteger(travelers) || travelers < 1 ||
+        !Number.isFinite(budget) || budget <= 0) {
+        showMessage("plannerMessage", "Enter a valid number of travellers and budget.", "red");
+        return;
+    }
+
+    if (interests.length === 0) {
+        showMessage("plannerMessage", "Please select at least one interest.", "red");
+        return;
+    }
+
+    const requestData = {
+        source,
+        destination,
+        startDate,
+        endDate,
+        travelers,
+        budget,
+        arrivalTransport,
+        localTransport,
+        interests,
+        interest: interests.join(", ")
+    };
+
+    button.disabled = true;
+    button.textContent = "Generating Plan...";
+    showMessage("plannerMessage", "Generating your itinerary and cost estimates...");
+
+    try {
+        const response = await fetch(API_BASE + "/api/planner/plan", {
+            method: "POST",
+            headers: authHeaders(true),
+            body: JSON.stringify(requestData)
+        });
+
+        const rawResponse = await response.text();
+        let data;
+
+        try {
+            data = rawResponse ? JSON.parse(rawResponse) : {};
+        } catch {
+            throw new Error("The server returned an unexpected response.");
+        }
+
+        if (!response.ok) {
+            throw new Error(data.error || data.message || "HTTP " + response.status);
+        }
+
+        renderPlannerResult(data, budget, travelers, requestData);
+        showMessage("plannerMessage", "Your trip plan was generated successfully!", "green");
+
+    } catch (error) {
+        console.error("Planner error:", error);
+        showMessage("plannerMessage", "Unable to generate the plan: " + error.message, "red");
+    } finally {
+        button.disabled = false;
+        button.textContent = "Generate My Trip Plan";
+    }
+});
+
+function renderPlannerResult(data, enteredBudget, enteredTravelers, requestData) {
+    const result = $("plannerResult");
+    result.replaceChildren();
+
+    const card = document.createElement("div");
+    card.className = "trip-card";
+    result.appendChild(card);
+
+    addText(card, "h2",
+        (data.source || requestData.source) + " → " +
+        (data.destination || requestData.destination)
+    );
+
+    addText(card, "p", "Duration: " + (data.days ?? "Not provided") + " days");
+    addText(card, "p", "Travellers: " + (data.travelers ?? enteredTravelers));
+    addText(card, "p", "Group budget: " + money(data.totalBudget ?? enteredBudget));
+    addText(card, "p", "Budget per person: " +
+        money(data.budgetPerPerson ?? enteredBudget / enteredTravelers));
+    addText(card, "p", "Interests: " + (data.interest || requestData.interest));
+    addText(card, "p", "Arrival transport: " + (data.arrivalTransport || requestData.arrivalTransport));
+    addText(card, "p", "Local transport: " + (data.localTransport || requestData.localTransport));
+
+    const mapActions = document.createElement("div");
+    mapActions.className = "map-actions";
+
+    if (data.mainRouteUrl) {
+        addMapButton(mapActions, "Open Driving Directions", data.mainRouteUrl);
+    } else {
+        addMapButton(
+            mapActions,
+            "Open Directions in Google Maps",
+            mapsDirections(requestData.source, requestData.destination)
+        );
+    }
+
+    card.appendChild(mapActions);
+
+    addText(card, "h3", "Transport Advice");
+    addText(card, "p", data.transportAdvice ||
+        "Confirm arrival transfers, local routes and fares before travelling.");
+
+    addText(card, "h3", "Your Day-wise Itinerary");
+
+    if (Array.isArray(data.itinerary) && data.itinerary.length > 0) {
+        const itineraryList = document.createElement("ol");
+
+        data.itinerary.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            itineraryList.appendChild(li);
+        });
+
+        card.appendChild(itineraryList);
+    } else {
+        addText(card, "p", "No itinerary entries were returned.");
+    }
+
+    addText(card, "h3", "Estimated Expense Breakdown");
+
+    const expenseGrid = document.createElement("div");
+    expenseGrid.className = "expense-grid";
+
+    const expenses = [
+        ["Main transport", data.transportCost],
+        ["Accommodation", data.accommodationCost],
+        ["Food", data.foodCost],
+        ["Local travel", data.localTravelCost],
+        ["Activities", data.activityCost]
+    ];
+
+    let categorySum = 0;
+    let allExpensesPresent = true;
+
+    expenses.forEach(([label, value]) => {
+        const item = document.createElement("div");
+        item.className = "expense-item";
+        addText(item, "span", label);
+
+        if (value === null || value === undefined ||
+            !Number.isFinite(Number(value))) {
+            allExpensesPresent = false;
+            addText(item, "strong", "Not provided");
+        } else {
+            const amount = Number(value);
+            categorySum += amount;
+            addText(item, "strong", money(amount));
+        }
+
+        expenseGrid.appendChild(item);
+    });
+
+    card.appendChild(expenseGrid);
+
+    const totalIsValid =
+        data.estimatedTotalCost !== null &&
+        data.estimatedTotalCost !== undefined &&
+        Number.isFinite(Number(data.estimatedTotalCost));
+
+    const total = totalIsValid ? Number(data.estimatedTotalCost) : null;
+    const backendBudget = Number(data.totalBudget ?? enteredBudget);
+
+    addText(card, "div",
+        "Estimated Total: " + (total === null ? "Not provided" : money(total)),
+        "estimated-total"
+    );
+
+    addText(card, "p",
+        "Estimated cost per person: " +
+        money(data.estimatedCostPerPerson)
+    );
+
+    /*
+     * IMPORTANT:
+     * Use the backend's returned estimatedTotalCost as the displayed total.
+     * Separately compare it with the category sum to detect inconsistent data.
+     */
+    const discrepancy = total !== null && allExpensesPresent
+        ? Math.abs(categorySum - total)
+        : 0;
+
+    if (total === null || !allExpensesPresent) {
+        addText(card, "div",
+            "The server did not return all expense values. This estimate is incomplete; confirm the costs before using this plan.",
+            "budget-warning"
+        );
+    } else if (discrepancy > 0.01) {
+        addText(card, "div",
+            "Expense breakdown mismatch: the categories add up to " +
+            money(categorySum) + ", but the server reported a total of " +
+            money(total) + ". The displayed total is the backend's value. " +
+            "Please check the backend calculation before relying on this estimate.",
+            "budget-warning"
+        );
+    }
+
+    if (total === null) {
+        addText(card, "div",
+            "Cannot verify whether the plan fits your budget because the backend total is missing.",
+            "budget-warning"
+        );
+    } else if (total > backendBudget) {
+        addText(card, "div",
+            "The estimate exceeds your group budget by " +
+            money(total - backendBudget) +
+            ". This plan is over budget. Choose cheaper options or increase the budget.",
+            "budget-warning"
+        );
+    } else {
+        addText(card, "div",
+            "The reported estimate is within your group budget. Remaining budget: " +
+            money(backendBudget - total) + ". Actual prices may be higher.",
+            "budget-ok"
+        );
+    }
+
+    if (data.withinBudget === false && total !== null && total <= backendBudget) {
+        addText(card, "div",
+            "The backend's budget status conflicts with its reported total. Please verify the backend response.",
+            "budget-warning"
+        );
+    }
+
+    if (data.budgetAdvice) addText(card, "p", data.budgetAdvice);
+    if (data.message) addText(card, "p", data.message, "muted");
+
+    addText(card, "p",
+        "Cost estimates are approximate, not live quotations. Confirm current transport fares, hotel prices, activity charges and road conditions before travelling.",
+        "muted"
+    );
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+package com.smarttravel.smarttravel;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SmarttravelApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}

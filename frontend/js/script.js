@@ -1,0 +1,1 @@
+console.log("Smart Travel frontend loaded successfully!");
