@@ -426,7 +426,9 @@
 <script>
 "use strict";
 
-const API_BASE = window.SMARTTRAVEL_API_BASE || "http://localhost:8081";
+
+const API_BASE = window.SMARTTRAVEL_API_BASE || "https://smart-travel-trip-planner.onrender.com";
+
 const getToken = () => localStorage.getItem("token");
 
 const $ = id => document.getElementById(id);
